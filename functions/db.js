@@ -5,7 +5,7 @@ function asyncSQL(sql, callback) {
     host: process.env.host,
     user: process.env.user,
     password: process.env.password,
-    dbport: process.env.dbport,
+    port: process.env.dbport,
     database: process.env.database,
   });
 
@@ -16,6 +16,17 @@ function asyncSQL(sql, callback) {
 }
 
 module.exports = asyncSQL;
+
+// If it's a select query, just take the length of the returned array.
+
+// connection.query(sql, [var1,var2], function(err, results) {
+//     numRows = results.length;
+// });
+// If it's an update/delete query, the returned dictionary will have an affectedRows variable.
+
+// connection.query(sql, [var1,var2], function(err, result) {
+//     numRows = result.affectedRows;
+// });
 
 // const mariadb = require("mariadb");
 

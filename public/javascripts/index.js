@@ -60,6 +60,25 @@ document.getElementById("find_submit").addEventListener("click", () => {
     document.getElementById("find_pwd").style.visibility = "visible";
     submitBtn.style.transform = "translateY(0px)";
   }
+
+  if (document.getElementById("find_pwd").value) {
+    const xhr = new XMLHttpRequest();
+    const data = {
+      email: document.getElementById("find_email").value,
+      pwd: document.getElementById("find_pwd").value,
+    };
+    xhr.onload = () => {
+      if (xhr.status === 200 || xhr.status === 201) {
+        console.log(xhr.responseText); // 서버에서 보내주는 값
+      }
+    };
+    xhr.onerror = () => {
+      console.error(xhr.responseText);
+    };
+    xhr.open("PUT", "http://localhost:3000/users/changePwd");
+    xhr.setRequestHeader("Content-Type", "application/json"); // 콘텐츠 타입을 json으로 설정
+    xhr.send(JSON.stringify(data)); // 데이터를 포함하여 전송
+  }
 });
 
 document.getElementById("sign-up").addEventListener("click", () => {
@@ -118,11 +137,13 @@ document.getElementById("signup-submit").addEventListener("click", () => {
   if (document.getElementById("sign_email").value) {
     document.getElementById("sign_valid").style.visibility = "visible";
     submitBtn.style.transform = "translateY(-240px)";
+    document.getElementById("sign_email").disabled = true;
   }
 
   if (document.getElementById("sign_valid").value.length === 6) {
     document.getElementById("sign_pw").style.visibility = "visible";
     submitBtn.style.transform = "translateY(-175px)";
+    document.getElementById("sign_valid").disabled = true;
 
     setTimeout(() => {
       document.getElementById("sign_name").style.visibility = "visible";
@@ -134,4 +155,49 @@ document.getElementById("signup-submit").addEventListener("click", () => {
       submitBtn.style.transform = "translateY(-25px)";
     }, 1800);
   }
+
+  if (
+    !!document.getElementById("sign_email").value &&
+    !!document.getElementById("sign_pw").value &&
+    !!document.getElementById("sign_name").value &&
+    !!document.getElementById("sign_nick").value
+  ) {
+    const xhr = new XMLHttpRequest();
+    const data = {
+      email: document.getElementById("sign_email").value,
+      pwd: document.getElementById("sign_pw").value,
+      name: document.getElementById("sign_name").value,
+      nick: document.getElementById("sign_nick").value,
+    };
+    xhr.onload = () => {
+      if (xhr.status === 200 || xhr.status === 201) {
+        console.log(xhr.responseText); // 서버에서 보내주는 값
+      }
+    };
+    xhr.onerror = () => {
+      console.error(xhr.responseText);
+    };
+    xhr.open("POST", "http://localhost:3000/users/register");
+    xhr.setRequestHeader("Content-Type", "application/json"); // 콘텐츠 타입을 json으로 설정
+    xhr.send(JSON.stringify(data)); // 데이터를 포함하여 전송
+  }
+});
+
+document.getElementById("login_btn").addEventListener("click", () => {
+  const xhr = new XMLHttpRequest();
+  const data = {
+    email: document.getElementById("id").value,
+    pwd: document.getElementById("pw").value,
+  };
+  xhr.onload = () => {
+    if (xhr.status === 200 || xhr.status === 201) {
+      console.log(xhr.responseText); // 서버에서 보내주는 값
+    }
+  };
+  xhr.onerror = () => {
+    console.error(xhr.responseText);
+  };
+  xhr.open("POST", "http://localhost:3000/users/login");
+  xhr.setRequestHeader("Content-Type", "application/json"); // 콘텐츠 타입을 json으로 설정
+  xhr.send(JSON.stringify(data)); // 데이터를 포함하여 전송
 });
