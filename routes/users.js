@@ -15,13 +15,14 @@ router.post("/auth_mail", (req, res) => {
   const rnd = randomNumber();
 
   asyncSQL(
-    `INSERT INTO auth (a_email, a_digit) VALUES ("${email}", "${rnd}";)`,
+    `INSERT INTO auth (a_email, a_digit) VALUES ("${email}", "${rnd}");`,
     (err, rows) => {
       if (err || rows.affectedRows < 1) {
         res.status(500).json({
           status: "fail",
           message: "서버에서 에러가 발생 하였습니다.",
         });
+        console.error(err);
       } else {
         sendMail(email, rnd, (err1) => {
           if (err1) {
@@ -29,6 +30,7 @@ router.post("/auth_mail", (req, res) => {
               status: "fail",
               message: "서버에서 에러가 발생 하였습니다.",
             });
+            console.error(err1);
           } else {
             res.status(201).json({
               status: "success",
@@ -75,7 +77,7 @@ router.get("/auth_valid", (req, res) => {
               });
             } else {
               res.status(200).json({
-                status: "sucsess",
+                status: "success",
                 message: "일치합니다.",
               });
             }
@@ -215,7 +217,7 @@ router.put("/changePwd", (req, res) => {
         });
       } else {
         asyncSQL(
-          `UPDATE user SET u_pwd = "${encryptPwd}" WHERE u_email = ${email}`,
+          `UPDATE user SET u_pwd = "${encryptPwd}" WHERE u_email = "${email}";`,
           (err1, rows1) => {
             if (err1) {
               res.status(500).json({
