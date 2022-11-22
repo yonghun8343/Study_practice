@@ -47,6 +47,7 @@ document.getElementById("find-arrow").addEventListener("click", () => {
 });
 
 document.getElementById("find_submit").addEventListener("click", () => {
+  dongledongle();
   const submitBtn = document.getElementById("find_submit");
 
   submitBtn.style.transition = "transform 1s linear";
@@ -55,31 +56,23 @@ document.getElementById("find_submit").addEventListener("click", () => {
     document.getElementById("find_email").value &&
     document.getElementById("find_email").disabled === false
   ) {
-    document.getElementsByClassName("dongle")[0].style.display = "flex";
     const xhr = new XMLHttpRequest();
     const data = {
       email: document.getElementById("find_email").value,
     };
 
     xhr.onload = () => {
-      document.getElementsByClassName("dongle")[0].style.display = "none";
       if (xhr.status === 201) {
-        const response = JSON.parse(xhr.responseText);
-        if (response.status === "success") {
-          document.getElementById("find_valid").style.visibility = "visible";
-          submitBtn.style.transform = "translateY(-115px)";
-          document.getElementById("find_email").disabled = true;
-        } else {
-          document.getElementById("`find-text`").innerText =
-            "잠시 후 다시 시도 해 주세요.";
-          document.getElementById("find-text").style.color = "red";
-        }
+        dongledongle();
+        document.getElementById("find_valid").style.visibility = "visible";
+        submitBtn.style.transform = "translateY(-115px)";
+        document.getElementById("find_email").disabled = true;
       }
     };
 
     xhr.onerror = () => {
-      document.getElementsByClassName("dongle")[0].style.display = "none";
-      document.getElementById("`find-text`").innerText =
+      dongledongle();
+      document.getElementById("find-text").innerText =
         "잠시 후 다시 시도 해 주세요.";
       document.getElementById("find-text").style.color = "red";
       console.error(xhr.responseText);
@@ -94,18 +87,18 @@ document.getElementById("find_submit").addEventListener("click", () => {
     document.getElementById("find_valid").value.length === 6 &&
     document.getElementById("find_valid").disabled === false
   ) {
-    document.getElementsByClassName("dongle")[0].style.display = "flex";
     const xhr = new XMLHttpRequest();
 
     xhr.onload = () => {
-      document.getElementsByClassName("dongle")[0].style.display = "none";
       if (xhr.status === 200) {
         const response = JSON.parse(xhr.responseText);
         if (response.status === "success") {
+          dongledongle();
           document.getElementById("find_pwd").style.visibility = "visible";
           submitBtn.style.transform = "translateY(0px)";
           document.getElementById("find_valid").disabled = true;
         } else {
+          dongledongle();
           document.getElementById("find-text").innerText = "일치하지 않습니다.";
           document.getElementById("find-text").style.color = "red";
         }
@@ -113,7 +106,7 @@ document.getElementById("find_submit").addEventListener("click", () => {
     };
 
     xhr.onerror = () => {
-      document.getElementsByClassName("dongle")[0].style.display = "none";
+      dongledongle();
       document.getElementById("find-text").innerText =
         "잠시 후 다시 시도 해 주세요.";
       document.getElementById("find-text").style.color = "red";
@@ -128,11 +121,7 @@ document.getElementById("find_submit").addEventListener("click", () => {
     xhr.send();
   }
 
-  if (
-    !!document.getElementById("find_email").value &&
-    !!document.getElementById("find_pwd").value
-  ) {
-    document.getElementsByClassName("dongle")[0].style.display = "flex";
+  if (document.getElementById("find_pwd").value) {
     const xhr = new XMLHttpRequest();
     const data = {
       email: document.getElementById("find_email").value,
@@ -140,12 +129,13 @@ document.getElementById("find_submit").addEventListener("click", () => {
     };
 
     xhr.onload = () => {
-      document.getElementsByClassName("dongle")[0].style.display = "none";
-      const response = JSON.parse(xhr.responseText);
       if (xhr.status === 200) {
+        const response = JSON.parse(xhr.responseText);
         if (response.status === "success") {
+          dongledongle();
           location.replace("http://localhost:3000");
         } else {
+          dongledongle();
           document.getElementById("find-text").innerText = response.message;
           document.getElementById("find-text").style.color = "red";
         }
@@ -153,10 +143,10 @@ document.getElementById("find_submit").addEventListener("click", () => {
     };
 
     xhr.onerror = () => {
-      document.getElementsByClassName("dongle")[0].style.display = "none";
+      dongledongle();
       document.getElementById("find-text").innerText =
         "잠시 후 다시 시도 해 주세요.";
-      console.error(xhr.responseText);
+      document.getElementById("find-text").style.color = "red";
     };
 
     xhr.open("PUT", "http://localhost:3000/users/changePwd");
@@ -214,6 +204,7 @@ document.getElementById("signup-arrow").addEventListener("click", () => {
 });
 
 document.getElementById("signup-submit").addEventListener("click", () => {
+  dongledongle();
   const submitBtn = document.getElementById("signup-submit");
 
   submitBtn.style.transition = "transform 1s linear";
@@ -222,7 +213,6 @@ document.getElementById("signup-submit").addEventListener("click", () => {
     document.getElementById("sign_email").value &&
     document.getElementById("sign_email").disabled === false
   ) {
-    document.getElementsByClassName("dongle")[0].style.display = "flex";
     const xhr = new XMLHttpRequest();
     const data = {
       email: document.getElementById("sign_email").value,
@@ -230,12 +220,14 @@ document.getElementById("signup-submit").addEventListener("click", () => {
 
     xhr.onreadystatechange = () => {
       if (xhr.readyState === xhr.DONE) {
-        document.getElementsByClassName("dongle")[0].style.display = "none";
         if (xhr.status === 201) {
+          dongledongle();
           document.getElementById("sign_valid").style.visibility = "visible";
           submitBtn.style.transform = "translateY(-240px)";
           document.getElementById("sign_email").disabled = true;
+          console.log(xhr.responseText);
         } else {
+          dongledongle();
           document.getElementById("sign-text").innerText =
             "잠시 후 다시 시도 해 주세요.";
           document.getElementById("sign-text").style.color = "red";
@@ -251,14 +243,13 @@ document.getElementById("signup-submit").addEventListener("click", () => {
     document.getElementById("sign_valid").value.length === 6 &&
     document.getElementById("sign_valid").disabled === false
   ) {
-    document.getElementsByClassName("dongle")[0].style.display = "flex";
     const xhr = new XMLHttpRequest();
 
     xhr.onload = () => {
-      document.getElementsByClassName("dongle")[0].style.display = "none";
       if (xhr.status === 200) {
         const response = JSON.parse(xhr.responseText);
         if (response.status === "success") {
+          dongledongle();
           document.getElementById("sign_pw").style.visibility = "visible";
           submitBtn.style.transform = "translateY(-175px)";
           document.getElementById("sign_valid").disabled = true;
@@ -273,13 +264,14 @@ document.getElementById("signup-submit").addEventListener("click", () => {
             submitBtn.style.transform = "translateY(-25px)";
           }, 1800);
         } else {
+          dongledongle();
           document.getElementById("sign-text").innerText = "일치하지 않습니다.";
         }
       }
     };
 
     xhr.onerror = () => {
-      document.getElementsByClassName("dongle")[0].style.display = "none";
+      dongledongle();
       document.getElementById("sign-text").innerText =
         "잠시 후 다시 시도 해 주세요.";
       console.error(xhr.responseText);
@@ -300,7 +292,6 @@ document.getElementById("signup-submit").addEventListener("click", () => {
     !!document.getElementById("sign_name").value &&
     !!document.getElementById("sign_nick").value
   ) {
-    document.getElementsByClassName("dongle")[0].style.display = "flex";
     const xhr = new XMLHttpRequest();
     const data = {
       email: document.getElementById("sign_email").value,
@@ -310,26 +301,25 @@ document.getElementById("signup-submit").addEventListener("click", () => {
     };
 
     xhr.onload = () => {
-      document.getElementsByClassName("dongle")[0].style.display = "none";
       if (xhr.status === 200) {
+        dongledongle();
         // 이미 가입된 이메일이 있음.
         document.getElementById("sign-text").innerText =
           "이미 가입된 이메일이 있습니다.";
       } else if (xhr.status === 201) {
-        // 성공적으로 가입 되었을 때 최초 화면으로 변경
-        // location.replace와 location.href 다른점 참고
-        // location.replace는 히스토리에 남지 않음
-        // location.href는 히스토리에 남음
+        dongledongle();
+        // 성공적으로 가입 되었을 때
         location.replace("http://localhost:3000");
         console.log(xhr.responseText);
       } else {
+        dongledongle();
         // status가 200, 201이 아닐 때 (400)일 때
         document.getElementById("sign-text").innerText =
           "오류가 발생 했습니다.";
       }
     };
     xhr.onerror = () => {
-      document.getElementsByClassName("dongle")[0].style.display = "none";
+      dongledongle();
       console.error(xhr.responseText);
     };
 
@@ -340,7 +330,7 @@ document.getElementById("signup-submit").addEventListener("click", () => {
 });
 
 document.getElementById("login_btn").addEventListener("click", () => {
-  document.getElementsByClassName("dongle")[0].style.display = "flex";
+  dongledongle();
   const xhr = new XMLHttpRequest();
   const data = {
     email: document.getElementById("id").value,
@@ -348,21 +338,29 @@ document.getElementById("login_btn").addEventListener("click", () => {
   };
 
   xhr.onload = () => {
-    document.getElementsByClassName("dongle")[0].style.display = "none";
     if (xhr.status === 200) {
       const response = JSON.parse(xhr.responseText);
       if (response.status === "success") {
         document.getElementById("login-text").innerText = "로그인 성공";
+
+        location.href = `http://localhost:3000/main.html`;
+        sessionStorage.setItem("id", response.info.id);
+        sessionStorage.setItem("name", response.info.name);
+        sessionStorage.setItem("nick", response.info.nick);
+
+        console.log(response);
+        dongledongle();
       } else {
         // response.status === "fail
         document.getElementById("login-text").innerText = response.message;
-        document.getElementById("login-text").style.color = "red";
+        dongledongle();
       }
     }
   };
 
   xhr.onerror = () => {
-    document.getElementsByClassName("dongle")[0].style.display = "none";
+    document.getElementById("dongle").style.display = "none";
+    dongledongle();
     console.error(xhr.responseText);
   };
 
@@ -371,47 +369,10 @@ document.getElementById("login_btn").addEventListener("click", () => {
   xhr.send(JSON.stringify(data));
 });
 
-document.getElementById("pw").addEventListener("keypress", (event) => {
-  console.log(event);
-  // ketcode는 deprecate
-  // if (event.keyCode === 13) {}
-  if (event.key === "Enter") {
-    document.getElementById("login_btn").click();
+function dongledongle() {
+  if (getComputedStyle(document.getElementById("dongle")).display === "none") {
+    document.getElementById("dongle").style.display = "flex";
+  } else {
+    document.getElementById("dongle").style.display = "none";
   }
-});
-
-document.getElementById("find_email").addEventListener("keypress", (event) => {
-  if (event.key === "Enter") {
-    document.getElementById("find_submit").click();
-  }
-});
-
-document.getElementById("find_valid").addEventListener("keypress", (event) => {
-  if (event.key === "Enter") {
-    document.getElementById("find_submit").click();
-  }
-});
-
-document.getElementById("find_pwd").addEventListener("keypress", (event) => {
-  if (event.key === "Enter") {
-    document.getElementById("find_submit").click();
-  }
-});
-
-document.getElementById("sign_email").addEventListener("keypress", (event) => {
-  if (event.key === "Enter") {
-    document.getElementById("signup-submit").click();
-  }
-});
-
-document.getElementById("sign_valid").addEventListener("keypress", (event) => {
-  if (event.key === "Enter") {
-    document.getElementById("signup-submit").click();
-  }
-});
-
-document.getElementById("sign_nick").addEventListener("keypress", (event) => {
-  if (event.key === "Enter") {
-    document.getElementById("signup-submit").click();
-  }
-});
+}

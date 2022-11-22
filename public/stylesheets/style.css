@@ -231,14 +231,18 @@
 #dongle {
   width: 50.56vw;
   height: 100%;
+  position: absolute;
+  top: 0;
+  left: 49.44vw;
+  opacity: 0.5;
   display: none;
   justify-content: center;
   align-items: center;
-  position: absolute;
-  opacity: 0.5;
-  top: 0;
-  left: 49.44vw;
-  background-color: #000000;
+  background-color: black;
+}
+
+.visible {
+  display: flex !important;
 }
 
 .lds-ellipsis {
