@@ -38,22 +38,17 @@ router.post("/write", (req, res) => {
 // http://localhost:3000/boadrd/get/1
 router.get("/get/:uid", (req, res) => {
   const { uid } = req.params;
-  let { count } = req.query;
+  let { page, count } = req.query;
   if (!uid) {
     res.status(400).end();
   }
   if (!count) {
     count = 10;
   }
-  // 삼항 연산자
-  // let count = !req.query.count ? 10 : req.query.count;
-  // let req = {
-  //   query: {
-  //       count: 1
-  //   }
-  // } << 이걸로 예시
+  if (!page || page < 1) {
+    page = 0;
+  }
 
-  // bid추가
   asyncSQL(
     `SELECT 
       a.u_nick as nick,
@@ -64,7 +59,7 @@ router.get("/get/:uid", (req, res) => {
     ON b.b_uid = a.u_id
     WHERE b_uid = "${uid}"
     ORDER BY b_date DESC
-    LIMIT ${count}`,
+    LIMIT ${page * count}, ${count}`,
     (err, rows) => {
       if (err) {
         res.status(500).json({
@@ -75,9 +70,6 @@ router.get("/get/:uid", (req, res) => {
           console.error(err);
         }
       } else {
-        // 여러개의 값을 처리를 할 필요가 있음.
-        // 10개에 대한 데이터를 json안에다가 넣어 주어야 되죠 왜냐 rows = []
-        // 우다다다 넣는 방법
         res.status(200).json({
           status: "success",
           content: rows,
@@ -88,7 +80,7 @@ router.get("/get/:uid", (req, res) => {
 });
 
 // 팔로워 한 사람들 글 조회
-router.get("/get/all/:uid", (req, res) => {
+router.get("/get/follow/:uid", (req, res) => {
   const { uid } = req.params;
   let { count } = req.query;
   if (!uid) {
@@ -100,6 +92,7 @@ router.get("/get/all/:uid", (req, res) => {
 
   asyncSQL(
     `SELECT
+      b.b_id as bid
       a.u_nick as nick,
       b.b_content as content,
       b.b_date as date
@@ -127,22 +120,24 @@ router.get("/get/all/:uid", (req, res) => {
   );
 });
 
-// 특정 개수 조회했는데 10개 안되서 부족한거 채울 때
-// not을 써서 해당 유저 이외 조회
-
-router.get("/get/any/:uid", (req, res) => {
-  const { uid } = req.params;
+// 내가 지금 팔로잉 한 사람이 없으면
+// 글이 0개 이것은 어떻게 할 것인가?
+router.get("/get/any", (req, res) => {
+  const { count } = req.query;
 
   asyncSQL(
-    `SELECT
+    `
+    SELECT
+      b.b_id as bid,
       a.u_nick as nick,
       b.b_content as content,
       b.b_date as date
     FROM board b JOIN user a
     ON b.b_uid = a.u_id
-    WHERE b.b_uid NOT IN (SELECT f_ing FROM follow WHERE f_er = ${uid})
+    WHERE b_uid > 0
     ORDER BY b_date DESC
-    LIMIT 10`,
+    LIMIT ${count};
+  `,
     (err, rows) => {
       if (err) {
         res.status(500).json({
@@ -153,6 +148,8 @@ router.get("/get/any/:uid", (req, res) => {
           console.error(err);
         }
       } else {
+        console.log("1111");
+        console.log(rows);
         res.status(200).json({
           status: "success",
           content: rows,
@@ -161,6 +158,40 @@ router.get("/get/any/:uid", (req, res) => {
     }
   );
 });
+
+// 특정 개수 조회했는데 10개 안되서 부족한거 채울 때
+// not을 써서 해당 유저 이외 조회
+// router.get("/get/any/:uid", (req, res) => {
+//   const { uid } = req.params;
+
+//   asyncSQL(
+//     `SELECT
+//       a.u_nick as nick,
+//       b.b_content as content,
+//       b.b_date as date
+//     FROM board b JOIN user a
+//     ON b.b_uid = a.u_id
+//     WHERE b.b_uid NOT IN (SELECT f_ing FROM follow WHERE f_er = ${uid})
+//     ORDER BY b_date DESC
+//     LIMIT 10`,
+//     (err, rows) => {
+//       if (err) {
+//         res.status(500).json({
+//           status: "fail",
+//           message: "서버에서 에러가 발생 하였습니다.",
+//         });
+//         if (process.env.NODE_ENV === "development") {
+//           console.error(err);
+//         }
+//       } else {
+//         res.status(200).json({
+//           status: "success",
+//           content: rows,
+//         });
+//       }
+//     }
+//   );
+// });
 
 // 글 수정
 // 진짜 글 작성한 사람이 맞는지 확인

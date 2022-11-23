@@ -97,6 +97,9 @@
 
 .wrap-right-bottom {
   margin-top: 30px;
+  overflow-y: scroll;
+  width: 80%;
+  height: calc(100% - 366px);
 }
 
 .board-content {
@@ -104,6 +107,7 @@
   background-color: #eff3f4;
   border-radius: 50px;
   padding: 30px;
+  margin-top: 30px;
 }
 
 .content-top {
@@ -121,5 +125,15 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-direction: column;
+}
+
+.wrap-right-bottom::-webkit-scrollbar {
+  width: 6px;
+}
+
+.wrap-right-bottom::-webkit-scrollbar-thumb {
+  height: 17%;
+  background-color: black;
+  /* background-color: #eff3f4; */
+  border-radius: 10px;
 }

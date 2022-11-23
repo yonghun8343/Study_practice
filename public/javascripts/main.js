@@ -1,16 +1,60 @@
 /* eslint-disable camelcase */
+sessionStorage.setItem("id", 4);
+sessionStorage.setItem("name", "4");
+sessionStorage.setItem("nick", "4");
 
-function makeBoard(bid, name, date, content) {
+const uid = sessionStorage.getItem("id");
+
+const page = 0;
+const count = 10;
+
+init(() => {
+  document.getElementById("wrap-right-bottom").addEventListener("scroll", () => {
+    
+  })
+});
+
+document.getElementById("desc-btn").addEventListener("click", () => {
+  const xhr = new XMLHttpRequest();
+  const data = {
+    userId: uid,
+    content: document.getElementById("desc").value,
+  };
+
+  xhr.onload = () => {
+    if (xhr.status === 201) {
+      const response = JSON.parse(xhr.responseText);
+      makeBoard(
+        response.bid,
+        sessionStorage.getItem("nick"),
+        getTime(Date.now()),
+        document.getElementById("desc").value,
+        "ASC"
+      );
+      document.getElementById("desc").value = "";
+    }
+  };
+
+  xhr.onerror = () => {
+    console.error(xhr.responseText);
+  };
+
+  xhr.open("POST", "http://localhost:3000/board/write");
+  xhr.setRequestHeader("Content-Type", "application/json");
+  xhr.send(JSON.stringify(data));
+});
+
+function makeBoard(bid, nick, date, content, sort = "DESC") {
   const div1 = document.createElement("div");
   div1.className = "board-content";
 
   const div1_1 = document.createElement("div");
   div1_1.className = "content-top";
-  const span1_1_1 = document.createElement("span");
-  span1_1_1.innerText = `작성자 : ${name}`;
-  const span1_1_2 = document.createElement("span");
-  span1_1_2.innerText = date;
-  div1_1.append(span1_1_1, span1_1_2);
+  const span1_1 = document.createElement("span");
+  span1_1.innerText = nick;
+  const span1_2 = document.createElement("span");
+  span1_2.innerText = date;
+  div1_1.append(span1_1, span1_2);
 
   const div1_2 = document.createElement("div");
   div1_2.className = "content-middle";
@@ -28,48 +72,86 @@ function makeBoard(bid, name, date, content) {
   div1_3_1.append(span1_3_1_1);
 
   div1_3_1.addEventListener("click", () => {
-    location.href(`http://localhost:3000/detail.html/${bid}`);
+    location.href = `http://localhost:3000/detail.html/${bid}`;
   });
 
   div1_3.append(div1_3_1);
 
   div1.append(div1_1, div1_2, div1_3);
 
-  document.getElementsByClassName("wrap-right-bottom")[0].appendChild(div1);
+  if (sort === "ASC") {
+    document.getElementsByClassName("wrap-right-bottom")[0].prepend(div1);
+  } else if (sort === "DESC") {
+    document.getElementsByClassName("wrap-right-bottom")[0].append(div1);
+  }
 }
 
-function getDateTime(date) {
+function init(callback) {
+  const xhr = new XMLHttpRequest();
+
+  xhr.onload = () => {
+    if (xhr.status === 200) {
+      const response = JSON.parse(xhr.responseText);
+      response.content.forEach((element, index) => {
+        makeBoard(
+          element.bid,
+          element.nick,
+          getTime(element.date),
+          element.content
+        );
+        if (index === response.length - 1) {
+          callback();
+        }
+      });
+    }
+  };
+
+  xhr.onerror = () => {
+    console.error(xhr.responseText);
+  };
+
+  xhr.open("GET", `http://localhost:3000/board/get/3`);
+  xhr.send();
+}
+
+function getTime(date) {
   const dt = new Date(date);
   const year = dt.getFullYear();
   const month = `0${dt.getMonth() + 1}`.slice(-2);
   const day = `0${dt.getDate()}`.slice(-2);
   const hh = `0${dt.getHours()}`.slice(-2);
   const mm = `0${dt.getMinutes()}`.slice(-2);
-  const ss = `0${dt.getSeconds()}`.slice(-2);
-  // 몇 년전, 몇 분전, 몇 초전 구현 가능?
-  // ISO 시간 써서 switch문으로 구현
-  return `${year}-${month}-${day} ${hh}:${mm}:${ss}`;
-}
 
-console.log("111");
+  // 입력 받은 시간의 UNIX Timestamp
+  dt.getTime();
 
-const xhr = new XMLHttpRequest();
-xhr.onload = () => {
-  console.log("222");
-  if (xhr.status === 200) {
-    console.log("333");
-    const response = JSON.parse(xhr.responseText);
-    console.log(response);
-    response.content.forEach((element) => {
-      makeBoard(
-        element.bid,
-        element.nick,
-        getDateTime(element.date),
-        element.content
-      );
-    });
+  // 현재 시간의 UNIX Timestamp
+  const now = new Date();
+
+  const pass = now.getTime() - dt.getTime();
+
+  let val = "";
+  switch (true) {
+    case pass >= 31536000000:
+      val = `${Math.floor(pass / 31536000000)}년 전`;
+      break;
+
+    case pass >= 2592000000:
+      val = `${Math.floor(pass / 2592000000)}월 전`;
+      break;
+
+    case pass >= 86400000:
+      val = `${Math.floor(pass / 86400000)}일 전`;
+      break;
+
+    case pass >= 60000:
+      val = `${Math.floor(pass / 60000)}분 전`;
+      break;
+
+    default:
+      val = "0분 전";
+      break;
   }
-};
 
-xhr.open("GET", `http://localhost:3000/board/get/1?limit=10`);
-xhr.send();
+  return `${year}-${month}-${day} ${hh}:${mm} (${val})`;
+}

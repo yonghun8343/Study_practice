@@ -218,6 +218,7 @@ document.getElementById("signup-submit").addEventListener("click", () => {
       email: document.getElementById("sign_email").value,
     };
 
+    // 요청 -> 대기(준비) -> 응답 -> 남은 작업(callback)
     xhr.onreadystatechange = () => {
       if (xhr.readyState === xhr.DONE) {
         if (xhr.status === 201) {
@@ -348,7 +349,6 @@ document.getElementById("login_btn").addEventListener("click", () => {
         sessionStorage.setItem("name", response.info.name);
         sessionStorage.setItem("nick", response.info.nick);
 
-        console.log(response);
         dongledongle();
       } else {
         // response.status === "fail
@@ -376,3 +376,9 @@ function dongledongle() {
     document.getElementById("dongle").style.display = "none";
   }
 }
+
+document.getElementById("pw").addEventListener("keypress", (event) => {
+  if (event.key === "Enter") {
+    document.getElementById("login_btn").click();
+  }
+});
