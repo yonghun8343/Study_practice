@@ -1,17 +1,40 @@
 /* eslint-disable camelcase */
-sessionStorage.setItem("id", 4);
+sessionStorage.setItem("id", 1);
 sessionStorage.setItem("name", "4");
 sessionStorage.setItem("nick", "4");
 
 const uid = sessionStorage.getItem("id");
 
-const page = 0;
+let page = 0;
 const count = 10;
+let isEnd = false;
 
-init(() => {
-  document.getElementById("wrap-right-bottom").addEventListener("scroll", () => {
-    
-  })
+getUserList(uid, page, count, () => {
+  if (!isEnd) {
+    document
+      .getElementsByClassName("wrap-right-bottom")[0]
+      .addEventListener("scroll", () => {
+        // scroll의 전체 높이
+        // this.scrollHeight
+        const scHei =
+          document.getElementsByClassName("wrap-right-bottom")[0].scrollHeight;
+        // 현재 scroll의 최상단 위치
+        // this.scrollTop
+        const scTop =
+          document.getElementsByClassName("wrap-right-bottom")[0].scrollTop;
+
+        // 해당 div의 높이
+        // this.clientHeight
+        // 최상단 + 높이 === 전체 높이 -> 끝에 닿음
+        const height =
+          document.getElementsByClassName("wrap-right-bottom")[0].clientHeight;
+
+        if (scHei <= scTop + height) {
+          page += 1;
+          getUserList(uid, page, count, () => {});
+        }
+      });
+  }
 });
 
 document.getElementById("desc-btn").addEventListener("click", () => {
@@ -43,6 +66,38 @@ document.getElementById("desc-btn").addEventListener("click", () => {
   xhr.setRequestHeader("Content-Type", "application/json");
   xhr.send(JSON.stringify(data));
 });
+
+function getUserList(userId, pageIndex, limit, callback) {
+  const xhr = new XMLHttpRequest();
+  xhr.onload = () => {
+    console.log(xhr.responseText);
+    if (xhr.status === 200) {
+      const response = JSON.parse(xhr.responseText);
+      if (response.content.length < 10) isEnd = true;
+      response.content.forEach((element, index) => {
+        makeBoard(
+          element.bid,
+          element.nick,
+          getTime(element.date),
+          element.content
+        );
+        if (index === response.content.length - 1) {
+          callback(response);
+        }
+      });
+    }
+  };
+
+  xhr.onerror = () => {
+    console.error(xhr.responseText);
+  };
+
+  xhr.open(
+    "GET",
+    `http://localhost:3000/board/get/${userId}?page=${pageIndex}&count=${limit}`
+  );
+  xhr.send();
+}
 
 function makeBoard(bid, nick, date, content, sort = "DESC") {
   const div1 = document.createElement("div");
@@ -84,34 +139,6 @@ function makeBoard(bid, nick, date, content, sort = "DESC") {
   } else if (sort === "DESC") {
     document.getElementsByClassName("wrap-right-bottom")[0].append(div1);
   }
-}
-
-function init(callback) {
-  const xhr = new XMLHttpRequest();
-
-  xhr.onload = () => {
-    if (xhr.status === 200) {
-      const response = JSON.parse(xhr.responseText);
-      response.content.forEach((element, index) => {
-        makeBoard(
-          element.bid,
-          element.nick,
-          getTime(element.date),
-          element.content
-        );
-        if (index === response.length - 1) {
-          callback();
-        }
-      });
-    }
-  };
-
-  xhr.onerror = () => {
-    console.error(xhr.responseText);
-  };
-
-  xhr.open("GET", `http://localhost:3000/board/get/3`);
-  xhr.send();
 }
 
 function getTime(date) {

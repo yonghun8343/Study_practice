@@ -290,12 +290,5 @@ router.delete("/delete/:bid", (req, res) => {
   });
 });
 
-// 댓글 조회
-
-// 댓글 작성
-
-// 댓글 수정
-
-// 댓글 삭제
 
 module.exports = router;
