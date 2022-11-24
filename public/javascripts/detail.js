@@ -38,7 +38,15 @@ document.getElementById("comment-btn").addEventListener("click", () => {
     xhr.onload = () => {
       if (xhr.status === 201) {
         document.getElementById("comm").value = "";
-        // 동적 DOM 만들어서 추가
+        const response = JSON.parse(xhr.response);
+        makeComment(
+          response.cid,
+          sessionStorage.getItem("id"),
+          sessionStorage.getItem("nick"),
+          getTime(Date()),
+          data.content,
+          "ASC"
+        );
       }
     };
 
@@ -52,7 +60,7 @@ document.getElementById("comment-btn").addEventListener("click", () => {
   }
 });
 
-function makeComment(cid, uid, nick, date, content) {
+function makeComment(cid, uid, nick, date, content, sort = "DESC") {
   const div1 = document.createElement("div");
   div1.className = "comment-wrap";
 
@@ -66,7 +74,9 @@ function makeComment(cid, uid, nick, date, content) {
   span1_1_1_2.innerText = date;
   div1_1_1.append(span1_1_1_1, span1_1_1_2);
   div1_1.append(div1_1_1);
-  if (uid === Number(sessionStorage.getItem("id"))) {
+  console.log(uid);
+  console.log(sessionStorage.getItem("id"));
+  if (Number(uid) === Number(sessionStorage.getItem("id"))) {
     const div1_1_2 = document.createElement("div");
     div1_1_2.className = "comment-first-right";
     const span1_1_2_1 = document.createElement("span");
@@ -128,6 +138,26 @@ function makeComment(cid, uid, nick, date, content) {
       newSpan1.remove();
       newSpan2.remove();
     });
+
+    span1_1_2_2.addEventListener("click", () => {
+      const xhr = new XMLHttpRequest();
+
+      xhr.onload = () => {
+        if (xhr.status === 200) {
+          div1.remove();
+        }
+      };
+
+      xhr.onerror = () => {
+        console.error(xhr.responseText);
+      };
+
+      xhr.open(
+        "DELETE",
+        `http://localhost:3000/comment/delete/${cid}?uid=${uid}`
+      );
+      xhr.send();
+    });
   }
 
   const div1_2 = document.createElement("div");
@@ -138,8 +168,28 @@ function makeComment(cid, uid, nick, date, content) {
 
   div1.append(div1_1, div1_2);
 
-  document.getElementsByClassName("comment-box")[0].append(div1);
+  if (sort === "ASC") {
+    document.getElementsByClassName("comment-box")[0].prepend(div1);
+  } else if (sort === "DESC") {
+    document.getElementsByClassName("comment-box")[0].append(div1);
+  }
 }
+
+document
+  .getElementsByClassName("comment-more")[0]
+  .addEventListener("click", () => {
+    getComment(bid, (data) => {
+      data.forEach((element) => {
+        makeComment(
+          element.cid,
+          element.uid,
+          element.nick,
+          getTime(element.date),
+          element.content
+        );
+      });
+    });
+  });
 
 function getBoard(boardId, callback) {
   const xhr = new XMLHttpRequest();
