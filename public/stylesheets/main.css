@@ -97,7 +97,7 @@
 
 .wrap-right-bottom {
   margin-top: 30px;
-  overflow-y: scroll;
+  overflow-y: auto;
   width: 80%;
   height: calc(100% - 366px);
 }

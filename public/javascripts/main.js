@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-sessionStorage.setItem("id", 1);
+sessionStorage.setItem("id", 4);
 sessionStorage.setItem("name", "4");
 sessionStorage.setItem("nick", "4");
 
@@ -10,32 +10,105 @@ const count = 10;
 let isEnd = false;
 
 getUserList(uid, page, count, () => {
-  if (!isEnd) {
-    document
-      .getElementsByClassName("wrap-right-bottom")[0]
-      .addEventListener("scroll", () => {
-        // scroll의 전체 높이
-        // this.scrollHeight
-        const scHei =
-          document.getElementsByClassName("wrap-right-bottom")[0].scrollHeight;
-        // 현재 scroll의 최상단 위치
-        // this.scrollTop
-        const scTop =
-          document.getElementsByClassName("wrap-right-bottom")[0].scrollTop;
+  document
+    .getElementsByClassName("wrap-right-bottom")[0]
+    .addEventListener("scroll", () => {
+      // scroll의 전체 높이
+      // bottom.scrollHeight
+      const scHei =
+        document.getElementsByClassName("wrap-right-bottom")[0].scrollHeight;
 
-        // 해당 div의 높이
-        // this.clientHeight
-        // 최상단 + 높이 === 전체 높이 -> 끝에 닿음
-        const height =
-          document.getElementsByClassName("wrap-right-bottom")[0].clientHeight;
+      // 현재 스크롤의 위치
+      // bottom.scrollTop
+      const scTop =
+        document.getElementsByClassName("wrap-right-bottom")[0].scrollTop;
 
-        if (scHei <= scTop + height) {
-          page += 1;
-          getUserList(uid, page, count, () => {});
-        }
-      });
-  }
+      const height =
+        document.getElementsByClassName("wrap-right-bottom")[0].clientHeight;
+
+      console.log(`scHei: ${scHei}`);
+      console.log(`scTop: ${scTop}`);
+      console.log(`height: ${height}`);
+      if (scHei <= scTop + height && isEnd === false) {
+        page += 1;
+        getUserList(uid, page, count);
+      }
+    });
 });
+
+function makeBoard(bid, nick, date, content, sort = "DESC") {
+  const div1 = document.createElement("div");
+  div1.className = "board-content";
+
+  const div1_1 = document.createElement("div");
+  div1_1.className = "content-top";
+  const span1_1 = document.createElement("span");
+  span1_1.innerText = nick;
+  const span1_2 = document.createElement("span");
+  span1_2.innerText = date;
+  div1_1.append(span1_1, span1_2);
+
+  const div1_2 = document.createElement("div");
+  div1_2.className = "content-middle";
+  const span1_2_1 = document.createElement("span");
+  span1_2_1.innerText = content;
+  div1_2.append(span1_2_1);
+
+  const div1_3 = document.createElement("div");
+  div1_3.className = "comment-container";
+  const div1_3_1 = document.createElement("div");
+  div1_3_1.className = "submit-btn";
+  div1_3_1.id = "comment-btn";
+  const span1_3_1_1 = document.createElement("span");
+  span1_3_1_1.innerText = "댓글 보기";
+  div1_3_1.append(span1_3_1_1);
+
+  div1_3_1.addEventListener("click", () => {
+    location.href = `http://localhost:3000/detail.html?bid=${bid}`;
+  });
+
+  div1_3.append(div1_3_1);
+
+  div1.append(div1_1, div1_2, div1_3);
+
+  if (sort === "ASC") {
+    document.getElementsByClassName("wrap-right-bottom")[0].prepend(div1);
+  } else if (sort === "DESC") {
+    document.getElementsByClassName("wrap-right-bottom")[0].append(div1);
+  }
+}
+
+function getUserList(userId, pageIndex, limit, callback) {
+  const xhr = new XMLHttpRequest();
+
+  xhr.onload = () => {
+    if (xhr.status === 200) {
+      const response = JSON.parse(xhr.responseText);
+      if (response.content.length < 10) {
+        isEnd = true;
+      }
+      response.content.forEach((element) => {
+        makeBoard(
+          element.bid,
+          element.nick,
+          getTime(element.date),
+          element.content
+        );
+      });
+      callback(response);
+    }
+  };
+
+  xhr.onerror = () => {
+    console.error(xhr.responseText);
+  };
+
+  xhr.open(
+    "GET",
+    `http://localhost:3000/board/get/${userId}?page=${pageIndex}&count=${limit}`
+  );
+  xhr.send();
+}
 
 document.getElementById("desc-btn").addEventListener("click", () => {
   const xhr = new XMLHttpRequest();
@@ -67,80 +140,6 @@ document.getElementById("desc-btn").addEventListener("click", () => {
   xhr.send(JSON.stringify(data));
 });
 
-function getUserList(userId, pageIndex, limit, callback) {
-  const xhr = new XMLHttpRequest();
-  xhr.onload = () => {
-    console.log(xhr.responseText);
-    if (xhr.status === 200) {
-      const response = JSON.parse(xhr.responseText);
-      if (response.content.length < 10) isEnd = true;
-      response.content.forEach((element, index) => {
-        makeBoard(
-          element.bid,
-          element.nick,
-          getTime(element.date),
-          element.content
-        );
-        if (index === response.content.length - 1) {
-          callback(response);
-        }
-      });
-    }
-  };
-
-  xhr.onerror = () => {
-    console.error(xhr.responseText);
-  };
-
-  xhr.open(
-    "GET",
-    `http://localhost:3000/board/get/${userId}?page=${pageIndex}&count=${limit}`
-  );
-  xhr.send();
-}
-
-function makeBoard(bid, nick, date, content, sort = "DESC") {
-  const div1 = document.createElement("div");
-  div1.className = "board-content";
-
-  const div1_1 = document.createElement("div");
-  div1_1.className = "content-top";
-  const span1_1 = document.createElement("span");
-  span1_1.innerText = nick;
-  const span1_2 = document.createElement("span");
-  span1_2.innerText = date;
-  div1_1.append(span1_1, span1_2);
-
-  const div1_2 = document.createElement("div");
-  div1_2.className = "content-middle";
-  const span1_2_1 = document.createElement("span");
-  span1_2_1.innerText = content;
-  div1_2.append(span1_2_1);
-
-  const div1_3 = document.createElement("div");
-  div1_3.className = "comment-container";
-  const div1_3_1 = document.createElement("div");
-  div1_3_1.className = "submit-btn";
-  div1_3_1.id = "comment-btn";
-  const span1_3_1_1 = document.createElement("span");
-  span1_3_1_1.innerText = "댓글 보기";
-  div1_3_1.append(span1_3_1_1);
-
-  div1_3_1.addEventListener("click", () => {
-    location.href = `http://localhost:3000/detail.html/${bid}`;
-  });
-
-  div1_3.append(div1_3_1);
-
-  div1.append(div1_1, div1_2, div1_3);
-
-  if (sort === "ASC") {
-    document.getElementsByClassName("wrap-right-bottom")[0].prepend(div1);
-  } else if (sort === "DESC") {
-    document.getElementsByClassName("wrap-right-bottom")[0].append(div1);
-  }
-}
-
 function getTime(date) {
   const dt = new Date(date);
   const year = dt.getFullYear();
@@ -158,6 +157,7 @@ function getTime(date) {
   const pass = now.getTime() - dt.getTime();
 
   let val = "";
+  console.log(pass);
   switch (true) {
     case pass >= 31536000000:
       val = `${Math.floor(pass / 31536000000)}년 전`;
@@ -172,10 +172,12 @@ function getTime(date) {
       break;
 
     case pass >= 60000:
+      console.log(pass);
       val = `${Math.floor(pass / 60000)}분 전`;
       break;
 
     default:
+      console.log("default");
       val = "0분 전";
       break;
   }
