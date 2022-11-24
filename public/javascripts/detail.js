@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 // [0]? [1]bid[0] = 38[1]
 const url = location.search;
 const bid = url.split("?")[1].split("=")[1];
@@ -6,20 +7,37 @@ sessionStorage.setItem("id", 4);
 sessionStorage.setItem("name", "4");
 sessionStorage.setItem("nick", "4");
 
-getBoard(bid, () => {});
+let page = 0;
+const count = 5;
+
+getBoard(bid, () => {
+  getComment(bid, (data) => {
+    console.log(data);
+    data.forEach((element) => {
+      makeComment(
+        element.cid,
+        element.uid,
+        element.nick,
+        getTime(element.date),
+        element.content
+      );
+    });
+  });
+});
 
 document.getElementById("comment-btn").addEventListener("click", () => {
   if (document.getElementById("comm").value.length) {
     const xhr = new XMLHttpRequest();
     const data = {
       userId: sessionStorage.getItem("id"),
-      content: document.getElementById("comm"),
+      content: document.getElementById("comm").value,
       bid,
       // bid: bid와 같습니다.
     };
 
     xhr.onload = () => {
       if (xhr.status === 201) {
+        document.getElementById("comm").value = "";
         // 동적 DOM 만들어서 추가
       }
     };
@@ -34,13 +52,101 @@ document.getElementById("comment-btn").addEventListener("click", () => {
   }
 });
 
+function makeComment(cid, uid, nick, date, content) {
+  const div1 = document.createElement("div");
+  div1.className = "comment-wrap";
+
+  const div1_1 = document.createElement("div");
+  div1_1.className = "comment-first";
+  const div1_1_1 = document.createElement("div");
+  div1_1_1.className = "comment-first-left";
+  const span1_1_1_1 = document.createElement("span");
+  span1_1_1_1.innerText = nick;
+  const span1_1_1_2 = document.createElement("span");
+  span1_1_1_2.innerText = date;
+  div1_1_1.append(span1_1_1_1, span1_1_1_2);
+  div1_1.append(div1_1_1);
+  if (uid === Number(sessionStorage.getItem("id"))) {
+    const div1_1_2 = document.createElement("div");
+    div1_1_2.className = "comment-first-right";
+    const span1_1_2_1 = document.createElement("span");
+    span1_1_2_1.innerText = "수정";
+    const span1_1_2_2 = document.createElement("span");
+    span1_1_2_2.innerText = "삭제";
+    div1_1_2.append(span1_1_2_1, span1_1_2_2);
+    div1_1.append(div1_1_2);
+
+    const newSpan1 = document.createElement("span");
+    newSpan1.innerText = "확인";
+    const newSpan2 = document.createElement("span");
+    newSpan2.innerText = "취소";
+    const newInput = document.createElement("input");
+    newInput.type = "text";
+    span1_1_2_1.addEventListener("click", () => {
+      console.log(newInput);
+      span1_2_1.style.display = "none";
+      span1_1_2_1.style.display = "none";
+      span1_1_2_2.style.display = "none";
+      newInput.value = span1_2_1.innerText;
+      div1_2.append(newInput);
+      div1_1_2.append(newSpan1, newSpan2);
+    });
+
+    newSpan1.addEventListener("click", () => {
+      const xhr = new XMLHttpRequest();
+      const data = {
+        userId: uid,
+        content: newInput.value,
+      };
+
+      xhr.onload = () => {
+        if (xhr.status === 200) {
+          span1_2_1.style.display = "block";
+          span1_1_2_1.style.display = "block";
+          span1_1_2_2.style.display = "block";
+          span1_2_1.innerText = newInput.value;
+          newInput.remove();
+          newSpan1.remove();
+          newSpan2.remove();
+        }
+      };
+
+      xhr.onerror = () => {
+        console.error(xhr.responseText);
+      };
+
+      xhr.open("PUT", `http://localhost:3000/comment/fix/${cid}`);
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.send(JSON.stringify(data));
+    });
+
+    newSpan2.addEventListener("click", () => {
+      span1_2_1.style.display = "block";
+      span1_1_2_1.style.display = "block";
+      span1_1_2_2.style.display = "block";
+      newInput.remove();
+      newSpan1.remove();
+      newSpan2.remove();
+    });
+  }
+
+  const div1_2 = document.createElement("div");
+  div1_2.className = "content-second";
+  const span1_2_1 = document.createElement("span");
+  span1_2_1.innerText = content;
+  div1_2.append(span1_2_1);
+
+  div1.append(div1_1, div1_2);
+
+  document.getElementsByClassName("comment-box")[0].append(div1);
+}
+
 function getBoard(boardId, callback) {
   const xhr = new XMLHttpRequest();
 
   xhr.onload = () => {
     if (xhr.status === 200) {
       const response = JSON.parse(xhr.responseText);
-      console.log(response);
       document.getElementById("nick").innerText = response.nick;
       document.getElementById("date").innerText = getTime(response.date);
       document.getElementById("content").innerText = response.content;
@@ -53,6 +159,32 @@ function getBoard(boardId, callback) {
   };
 
   xhr.open("GET", `http://localhost:3000/board/get/board/${boardId}`);
+  xhr.send();
+}
+
+function getComment(boardId, callback) {
+  const xhr = new XMLHttpRequest();
+
+  xhr.onload = () => {
+    if (xhr.status === 200) {
+      const response = JSON.parse(xhr.responseText);
+      if (response.content.length < 5) {
+        document.getElementsByClassName("comment-more")[0].style.display =
+          "none";
+      }
+      page += 1;
+      callback(response.content);
+    }
+  };
+
+  xhr.onerror = () => {
+    console.error(xhr.responseText);
+  };
+
+  xhr.open(
+    "GET",
+    `http://localhost:3000/comment/get/${boardId}?page=${page}&count=${count}`
+  );
   xhr.send();
 }
 
@@ -73,7 +205,6 @@ function getTime(date) {
   const pass = now.getTime() - dt.getTime();
 
   let val = "";
-  console.log(pass);
   switch (true) {
     case pass >= 31536000000:
       val = `${Math.floor(pass / 31536000000)}년 전`;
@@ -87,13 +218,15 @@ function getTime(date) {
       val = `${Math.floor(pass / 86400000)}일 전`;
       break;
 
+    case pass >= 3600000:
+      val = `${Math.floor(pass / 3600000)}시간 전`;
+      break;
+
     case pass >= 60000:
-      console.log(pass);
       val = `${Math.floor(pass / 60000)}분 전`;
       break;
 
     default:
-      console.log("default");
       val = "0분 전";
       break;
   }
