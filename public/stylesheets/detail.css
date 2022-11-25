@@ -45,8 +45,9 @@
   cursor: pointer;
 }
 
-.comment-more:hover {
+.comment-more span:hover {
   color: blue;
+  font-weight: 900;
 }
 
 .comment-first {
@@ -57,9 +58,6 @@
 }
 
 .comment-first div:nth-child(1) {
-  /* display: flex;
-  justify-content: space-around;
-  align-items: center; */
   width: 80%;
 }
 
@@ -78,6 +76,6 @@
   cursor: pointer;
 }
 
-.content-second {
+.comment-second {
   margin-top: 20px;
 }

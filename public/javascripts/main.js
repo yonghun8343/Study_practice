@@ -84,7 +84,6 @@ function getUserList(userId, pageIndex, limit, callback) {
   xhr.onload = () => {
     if (xhr.status === 200) {
       const response = JSON.parse(xhr.responseText);
-      console.log(response);
       if (response.content.length < 10) {
         isEnd = true;
       }

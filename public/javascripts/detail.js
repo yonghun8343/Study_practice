@@ -86,6 +86,7 @@ function makeComment(cid, uid, nick, date, content, sort = "DESC") {
     div1_1_2.append(span1_1_2_1, span1_1_2_2);
     div1_1.append(div1_1_2);
 
+    // 다시 돌아오기
     const newSpan1 = document.createElement("span");
     newSpan1.innerText = "확인";
     const newSpan2 = document.createElement("span");
@@ -93,10 +94,9 @@ function makeComment(cid, uid, nick, date, content, sort = "DESC") {
     const newInput = document.createElement("input");
     newInput.type = "text";
     span1_1_2_1.addEventListener("click", () => {
-      console.log(newInput);
-      span1_2_1.style.display = "none";
       span1_1_2_1.style.display = "none";
       span1_1_2_2.style.display = "none";
+      span1_2_1.style.display = "none";
       newInput.value = span1_2_1.innerText;
       div1_2.append(newInput);
       div1_1_2.append(newSpan1, newSpan2);
@@ -161,7 +161,7 @@ function makeComment(cid, uid, nick, date, content, sort = "DESC") {
   }
 
   const div1_2 = document.createElement("div");
-  div1_2.className = "content-second";
+  div1_2.className = "comment-second";
   const span1_2_1 = document.createElement("span");
   span1_2_1.innerText = content;
   div1_2.append(span1_2_1);

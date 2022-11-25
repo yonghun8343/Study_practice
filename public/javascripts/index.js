@@ -218,7 +218,6 @@ document.getElementById("signup-submit").addEventListener("click", () => {
       email: document.getElementById("sign_email").value,
     };
 
-    // 요청 -> 대기(준비) -> 응답 -> 남은 작업(callback)
     xhr.onreadystatechange = () => {
       if (xhr.readyState === xhr.DONE) {
         if (xhr.status === 201) {
