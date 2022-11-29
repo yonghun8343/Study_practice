@@ -8,6 +8,12 @@
   align-items: center;
 }
 
+#nick {
+  font-family: "NotoSans";
+  font-size: 16px;
+  font-weight: 700;
+}
+
 .profile-content-btn {
   width: 100px;
   height: 34px;
