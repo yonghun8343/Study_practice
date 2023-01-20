@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <body>
+    <div
+      id="shy"
+      style="
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        background-color: pink;
+      "
+    ></div>
+  </body>
+  <script>
+    const shy = document.getElementById("shy");
+    shy.addEventListener("mousemove", (event) => {
+      shy.style.top = `${random(0, window.innerHeight - 100)}px`;
+      shy.style.left = `${random(0, window.innerWidth - 100)}px`;
+    });
+
+    function random(min, max) {
+      return Math.floor(Math.random() * (max - min) + min);
+    }
+  </script>
+</html>

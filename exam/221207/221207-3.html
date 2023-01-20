@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <body>
+    <div id="root"></div>
+  </body>
+  <script
+    crossorigin
+    src="https://unpkg.com/react@18/umd/react.development.js"
+  ></script>
+  <script
+    crossorigin
+    src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
+  ></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel">
+    const root = document.getElementById("root");
+
+    function H1(props) {
+      return <h1>여기는 {props.where /* 빈칸 */}!!!</h1>;
+    }
+
+    const Container = () => {
+      return (
+        <React.Fragment>
+          <H1 where="대한민국" /* 빈칸 */ />
+        </React.Fragment>
+      );
+    };
+    
+    ReactDOM.render(<Container />, root);
+  </script>
+</html>

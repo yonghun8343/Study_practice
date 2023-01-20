@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <body>
+    <div id="root"></div>
+  </body>
+  <script
+    crossorigin
+    src="https://unpkg.com/react@18/umd/react.development.js"
+  ></script>
+  <script
+    crossorigin
+    src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
+  ></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel">
+    // const root = ReactDOM.createRoot(document.getElementById("root"));
+
+    // const array = [
+    //   "일어나기",
+    //   "씻기",
+    //   "커피사기",
+    //   "출근하기",
+    //   "일하기",
+    //   "점심먹기",
+    //   "일하기",
+    //   "퇴근하기",
+    // ];
+    // const array2 = array.map((value) => {
+    //   return <li>{value}</li>;
+    // });
+
+    // const root = ReactDOM.createRoot(document.getElementById("root"));
+    // const array = [
+    //   { id: "1", name: "김", nick: "김씨" },
+    //   { id: "2", name: "이", nick: "이씨" },
+    //   { id: "3", name: "최", nick: "최씨" },
+    //   { id: "4", name: "박", nick: "박씨" },
+    // ];
+
+    // function ClientList(props) {
+    //   return <ul>{props.clientList}</ul>;
+    // }
+    // const array2 = [];
+    // for (let i = 0; i < array.length; i++) {
+    //   array2[i] = (
+    //     <li>{`${array[i].id}번의 이름은 ${array[i].name}이고 닉네임은 ${array[i].nick}입니다.`}</li>
+    //   );
+    // }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    const array = [
+      { id: "1", name: "김", nick: "김씨" },
+      { id: "2", name: "이", nick: "이씨" },
+      { id: "3", name: "최", nick: "최씨" },
+      { id: "4", name: "박", nick: "박씨" },
+    ];
+
+    function ClientList(props) {
+      return <ul>{props.clientList}</ul>;
+    }
+    const array2 = array.map((value) => {
+      if (value.id === "1") {
+        return (
+          <li>{`${value.id}번의 이름은 ${value.name}이고 닉네임은 ${value.nick}입니다.`}</li>
+        );
+      }
+    });
+    console.log(array2);
+
+    root.render(<ClientList clientList={array2} />);
+  </script>
+</html>

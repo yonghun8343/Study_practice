@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <body>
+    <div id="root"></div>
+  </body>
+  <script
+    crossorigin
+    src="https://unpkg.com/react@18/umd/react.development.js"
+  ></script>
+  <script
+    crossorigin
+    src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
+  ></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel">
+    const root = document.getElementById("root");
+    class App extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = {
+          counter: 0,
+          date: 0,
+        };
+      }
+
+      add = () => {
+        console.log("1");
+        this.setState((prevState) => ({
+          counter: prevState.counter + 1,
+        }));
+        this.setState((prevState) => ({
+          date: prevState.date + 1,
+        }));
+        console.log(this.state);
+      };
+
+      render() {
+        return (
+          <React.Fragment>
+            <span>클릭: {this.state.counter}</span>
+            <button style={{ color: "red" }} onClick={this.add}>
+              클릭
+            </button>
+          </React.Fragment>
+        );
+      }
+    }
+
+    ReactDOM.render(<App />, root);
+  </script>
+</html>

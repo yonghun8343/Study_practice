@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+  <body>
+    <div id="root"></div>
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18/umd/react.development.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
+    ></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script type="text/babel">
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+
+      function TextList(props) {
+        return (
+          <ul>
+            {props.items.map((value, index) => {
+              return (
+                <li key={index}>
+                  <span>{`이름 : ${value.name}, 상태 : ${
+                    !value.status ? "로그인" : "로그아웃"
+                  }`}</span>
+                  {!value.status ? (
+                    <button
+                      onClick={() => {
+                        props.reStatus(index);
+                      }}
+                    >
+                      로그아웃 시키기
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        props.reStatus(index);
+                      }}
+                    >
+                      로그인 시키기
+                    </button>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        );
+      }
+
+      function TextArea(props) {
+        return (
+          <div>
+            <span>{`현재 온라인 한 고객의 수는 ${props.count}명 입니다.`}</span>
+          </div>
+        );
+      }
+
+      function InputArea(props) {
+        return (
+          <div>
+            <input type="text" onChange={props.change} value={props.value} />
+            <button onClick={props.add}>추가</button>
+          </div>
+        );
+      }
+
+      function App(props) {
+        const user = [
+          {
+            id: 0,
+            name: "홍길동",
+            status: true,
+          },
+          {
+            id: 1,
+            name: "김아무개",
+            status: false,
+          },
+          {
+            id: 2,
+            name: "이아무개",
+            status: true,
+          },
+          {
+            id: 3,
+            name: "최아무개",
+            status: false,
+          },
+          {
+            id: 4,
+            name: "박아무개",
+            status: true,
+          },
+        ];
+
+        const [users, changeUsers] = React.useState(user);
+        const [value, changeValue] = React.useState("");
+
+        const addUser = () => {
+          changeUsers([
+            ...users,
+            { id: user.length, name: value, status: "online" },
+          ]);
+          changeValue("");
+        };
+
+        const reValue = (e) => {
+          changeValue(e.target.value);
+        };
+
+        const reStatus = (index) => {
+          changeUsers(
+            users.map((user) =>
+              user.id === index ? { ...user, status: !user.status } : user
+            )
+          );
+        };
+
+        const countOnline = () => {
+          console.log("이게 반복 됩니다.");
+          return users.filter((user) => user.status === true).length;
+        };
+
+        const memo = React.useMemo(() => {
+          return countOnline();
+        }, [users]);
+
+        return (
+          <React.Fragment>
+            <InputArea value={value} change={reValue} add={addUser} />
+            <TextArea count={memo} />
+            <TextList items={users} reStatus={reStatus} />
+          </React.Fragment>
+        );
+      }
+
+      root.render(<App />);
+    </script>
+  </body>
+</html>

@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 let socket = ""; // 빈값으로 초기화 전역에서 사용하기 위해서
 
 const connect = document.getElementById("connect"); // 연결 버튼 DOm 받아옴

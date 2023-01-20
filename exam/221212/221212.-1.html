@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <body>
+    <div id="root"></div>
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18/umd/react.development.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
+    ></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script type="text/babel">
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+
+      function TextList(props) {
+        return (
+          <ul>
+            {props.items.map((value, index) => {
+              return <li key={index}>{value}</li>;
+            })}
+          </ul>
+        );
+      }
+
+      function App(props) {
+        const [list, changeList] = React.useState([]);
+
+        function addNumber() {
+          changeList((list) => {
+            console.log(list);
+            return [...list, Math.floor(Math.random() * (45 - 1) + 1)];
+          });
+        }
+
+        return (
+          <div>
+            nClick={addNumber}>랜덤 숫자</button>
+            <TextList items={list} />
+          </div>
+        );
+      }
+
+      root.render(<App />);
+    </script>
+  </body>
+</html>
